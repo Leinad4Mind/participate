@@ -3,7 +3,7 @@
     "type": "phpbb-extension",
     "description": "This extension let you  be part of an activity (topic)",
     "homepage": "http://forumhulp.com",
-    "version": "1.0.0",
+    "version": "3.1.0",
     "time": "2015-04-01",
     "keywords": [
         "phpbb",
