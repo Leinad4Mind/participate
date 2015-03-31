@@ -56,7 +56,7 @@ class controller
 		{
 			default:
 				$topicid = $this->request->variable('t', 0);
-				
+
 				if ($topicid)
 				{
 					$this->user->add_lang_ext('forumhulp/participate', 'participate');
@@ -67,12 +67,12 @@ class controller
 					{
 						$sql = 'INSERT INTO ' . $this->participate_table . ' VALUES(' . $this->user->data['user_id'] . ', ' . $topicid . ', 1, ' . time() . ')';
 						$row['active'] = 1;
-						
+
 					} else
 					{
 						$sql = 'UPDATE ' . $this->participate_table . ' 
 								SET active = !active, post_time = ' . time() . ' WHERE topic_id = ' . $topicid . ' AND user_id = ' . $this->user->data['user_id'];
-						$row['active'] = !$row['active'];				
+						$row['active'] = !$row['active'];
 					}
 					$this->db->sql_query($sql);
 
@@ -87,7 +87,7 @@ class controller
 						));
 					}
 				}
-				exit();		
+				exit();
 		}
 	}
 }

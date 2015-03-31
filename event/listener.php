@@ -68,24 +68,24 @@ class listener implements EventSubscriberInterface
 	{
 		$this->user->add_lang_ext('forumhulp/participate', 'participate');
 		$forum_selected = explode(',', $this->config['participate_forum_ids']);
-		
+
 		$data = $event['topic_data'];
 		if (in_array($data['forum_id'], $forum_selected))
 		{
 			$sql = 'SELECT active FROM ' . $this->participate_table . ' WHERE user_id = ' . $this->user->data['user_id'] . ' AND topic_id = ' . $data['topic_id'];
 			$result = $this->db->sql_query($sql);
 			$row = $this->db->sql_fetchrow($result);
-			
+
 			$this->template->assign_vars(array(
 				'S_PARTICIPATE'	=> (in_array($data['forum_id'], $forum_selected) && $data['topic_id'] == $data['topic_first_post_id']) ? true : false,
 				'STATUS_CLASS'	=> (!$row) ? 'grijs' : (($row['active']) ? 'groen' : 'rood'),
-				'STATUS_TXT'	=> (!$row) ? $this->user->lang['STATUS_TXT_NOT_PARTICIPATE'] : 
+				'STATUS_TXT'	=> (!$row) ? $this->user->lang['STATUS_TXT_NOT_PARTICIPATE'] :
 									(($row['active']) ? $this->user->lang['STATUS_TXT_PARTICIPATE'] : $this->user->lang['STATUS_TXT_CANCEL_PARTICIPATE']),
-				'BUTTON_TXT'	=> (!$row) ? $this->user->lang['STATUS_TITLE_NOT_PARTICIPATE'] : 
+				'BUTTON_TXT'	=> (!$row) ? $this->user->lang['STATUS_TITLE_NOT_PARTICIPATE'] :
 									(($row['active']) ? $this->user->lang['STATUS_TITLE_PARTICIPATE'] : $this->user->lang['STATUS_TITLE_CANCEL_PARTICIPATE']),
 				'STATUS_URL'	=> $this->controller_helper->route('participate_controller', array('name' => 'index.html', 't' => $data['topic_id']))
 			));
-		
+
 			$sql = 'SELECT u.username, u.user_colour, d.user_id, d.active
 					FROM ' . $this->participate_table . ' AS d
 					LEFT JOIN ' . USERS_TABLE . ' AS u
@@ -104,7 +104,7 @@ class listener implements EventSubscriberInterface
 			}
 		}
 	}
-	
+
 	public function add_config($event)
 	{
 		if($event['mode'] == 'settings')
@@ -130,7 +130,7 @@ class listener implements EventSubscriberInterface
 
 		$forum_list = make_forum_select(false, false, true, true, true, false, true);
 		$forum_selected = explode(',', $config['participate_forum_ids']);
-		
+
 		// Build forum options
 		$s_forum_options = '<select id="' . $key . '" name="' . $key . '[]" multiple="multiple">';
 		foreach ($forum_list as $f_id => $f_row)
