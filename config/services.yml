@@ -1,0 +1,25 @@
+imports:
+    - { resource: tables.yml }
+
+services:
+    forumhulp.participate.listener:
+        class: forumhulp\participate\event\listener
+        arguments:
+            - @dbal.conn
+            - @config
+            - @controller.helper
+            - @request
+            - @template
+            - @user
+            - %forumhulp.participate.tables.participate%
+        tags:
+            - { name: event.listener }
+
+    forumhulp.participate.controller:
+        class: forumhulp\participate\controller\controller
+        arguments:
+            - @dbal.conn
+            - @template
+            - @user
+            - @request
+            - %forumhulp.participate.tables.participate%

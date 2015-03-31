@@ -1,0 +1,5 @@
+participate_controller:
+    pattern: /participate/{name}
+    defaults: { _controller: forumhulp.participate.controller:handle, var: '' }
+    requirements:
+        var: ".*"

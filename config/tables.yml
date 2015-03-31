@@ -1,0 +1,2 @@
+parameters:
+    forumhulp.participate.tables.participate: %core.table_prefix%participate

@@ -1,0 +1,38 @@
+{
+    "name": "forumhulp/participate",
+    "type": "phpbb-extension",
+    "description": "This extension let you  be part of an activity (topic)",
+    "homepage": "http://forumhulp.com",
+    "version": "1.0.0",
+    "time": "2015-04-01",
+    "keywords": [
+        "phpbb",
+        "extension",
+        "bepartofit",
+        "activitity",
+		"participate"
+    ],
+    "license": "GPL-2.0",
+    "authors": [
+		{
+		"name": "John Peskens",
+		"homepage": "http://forumhulp.com",
+		"email": "info@forumhulp.com",
+		"role": "Developer"
+		}
+    ],
+    "require": {
+        "php": ">=5.3.3"
+    },
+    "extra": {
+        "display-name": "Participate",
+        "soft-require": {
+            "phpbb/phpbb": "3.1.*"
+        },
+        "version-check": {
+            "host": "forumhulp.com",
+            "directory": "/ext",
+            "filename": "index.php?id=39"
+        }
+    }
+}

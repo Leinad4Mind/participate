@@ -1,0 +1,12 @@
+<!-- IF S_PARTICIPATE and postrow.S_FIRST_ROW -->
+<div class="participantsbar">
+	<!-- IF .participants -->
+		{L_PARTICIPANTS}: 
+		<!-- BEGIN participants -->
+		<span class="{participants.CLASS}" style="color: #{participants.USERCOLOUR};">{participants.USERNAME}</span> 
+		<!-- END participants -->
+	<!-- ELSE -->
+	{L_NO_PARTICIPANTS}
+	<!-- ENDIF -->
+</div>
+<!-- ENDIF -->
