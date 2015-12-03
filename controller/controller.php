@@ -8,6 +8,7 @@
 */
 
 namespace forumhulp\participate\controller;
+
 use Symfony\Component\DependencyInjection\Container;
 
 class controller
@@ -69,11 +70,10 @@ class controller
 					$result = $this->db->sql_query($sql);
 					while ($row1 = $this->db->sql_fetchrow($result))
 					{
-						
 						$participants .= (($participants == '') ? $this->user->lang['PARTICIPANTS'] . $this->user->lang['COLON'] . ' ': ', ') . '<span class="' . (($row1['active']) ? 'zwart' : 'grijs doorstreept') . '" style="color: #' . $row1['user_colour'] . ';">' . $row1['username'] . '</span>';
 					}
 					$info_url = '<a href="' . $this->helper->route('participate_controller', array('name' => 'index.html', 't' => 0)) . '" class="simpledialog"><i class="fa fa-info-circle" title="Extension Info"></i></a> <script>$("a.simpledialog").simpleDialog({opacity: 0.1,width: \'650px\',closeLabel: \'&times;\'});</script>';
-					
+
 					if ($this->request->is_ajax())
 					{
 						$json_response = new \phpbb\json_response();

@@ -71,7 +71,7 @@ class listener implements EventSubscriberInterface
 
 		$post_id = $event['rowset']['post_id'];
 		$data = $event['topic_data'];
-		
+
 		if (in_array($data['forum_id'], $forum_selected) && $post_id = $data['topic_first_post_id'])
 		{
 			$sql = 'SELECT active FROM ' . $this->participate_table . ' WHERE user_id = ' . $this->user->data['user_id'] . ' AND topic_id = ' . $data['topic_id'];
@@ -116,7 +116,7 @@ class listener implements EventSubscriberInterface
 				$$new_vars = $this->request->variable('participate_forum_ids', array('' => ''), true);
 				$this->config->set('participate_forum_ids', implode(',' , $$new_vars));
 			}
-			
+
 			$this->user->add_lang_ext('forumhulp/participate', 'participate');
 			$display_vars = $event['display_vars'];
 			/* We add a new legend, but we need to search for the last legend instead of hard-coding */
