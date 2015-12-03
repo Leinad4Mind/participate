@@ -18,8 +18,10 @@ services:
     forumhulp.participate.controller:
         class: forumhulp\participate\controller\controller
         arguments:
+            - @service_container
             - @dbal.conn
             - @template
             - @user
             - @request
+            - @controller.helper
             - %forumhulp.participate.tables.participate%

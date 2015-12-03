@@ -18,11 +18,8 @@ if (empty($lang) || !is_array($lang))
 }
 
 $lang = array_merge($lang, array(
-	'ACP_PARTICIPANTS_TITLE'			=> 'Participate Forums',
-
-	'PARTICIPANTS'						=> 'Participants',
-	'PARTICIPANTS_EXPLAIN'				=> 'Select forums to participate. Get a nice list of participated members.',
-	'NO_PARTICIPANTS'					=> 'No Participants',
+	'PARTICIPANTS'						=> 'Participants for this event',
+	'NO_PARTICIPANTS'					=> 'No Participants for this event',
 
 	'STATUS_TXT_NOT_PARTICIPATE'		=> 'You have not signed up.',
 	'STATUS_TXT_PARTICIPATE'			=> 'You have signed up.',

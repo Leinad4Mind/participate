@@ -1,0 +1,12 @@
+<!-- IF S_PARTICIPATE -->
+<div id="participate_bar" class="participantsbar">
+	<!-- IF .participants -->
+		{INFO_URL} {L_PARTICIPANTS}: 
+		<!-- BEGIN participants -->
+		<span class="{participants.CLASS}" style="color: #{participants.USERCOLOUR};">{participants.USERNAME}</span><!-- IF not participants.S_LAST_ROW -->, <!-- ENDIF -->
+		<!-- END participants -->
+	<!-- ELSE -->
+	{L_NO_PARTICIPANTS}
+	<!-- ENDIF -->
+</div>
+<!-- ENDIF -->

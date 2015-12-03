@@ -7,7 +7,7 @@
 *
 */
 
-namespace forumhulp\participate\migrations\v10x;
+namespace forumhulp\participate\migrations\v31x;
 
 /**
 * Migration stage 1: Initial schema changes to the database

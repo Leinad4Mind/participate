@@ -59,8 +59,8 @@ class listener implements EventSubscriberInterface
 	static public function getSubscribedEvents()
 	{
 		return array(
-			'core.viewtopic_assign_template_vars_before'	=> 'participate',
-			'core.acp_board_config_edit_add'				=> 'add_config'
+			'core.viewtopic_modify_post_data'	=> 'participate',
+			'core.acp_board_config_edit_add'	=> 'add_config'
 		);
 	}
 
@@ -69,28 +69,30 @@ class listener implements EventSubscriberInterface
 		$this->user->add_lang_ext('forumhulp/participate', 'participate');
 		$forum_selected = explode(',', $this->config['participate_forum_ids']);
 
+		$post_id = $event['rowset']['post_id'];
 		$data = $event['topic_data'];
-		if (in_array($data['forum_id'], $forum_selected))
+		
+		if (in_array($data['forum_id'], $forum_selected) && $post_id = $data['topic_first_post_id'])
 		{
 			$sql = 'SELECT active FROM ' . $this->participate_table . ' WHERE user_id = ' . $this->user->data['user_id'] . ' AND topic_id = ' . $data['topic_id'];
 			$result = $this->db->sql_query($sql);
 			$row = $this->db->sql_fetchrow($result);
 
 			$this->template->assign_vars(array(
-				'S_PARTICIPATE'	=> (in_array($data['forum_id'], $forum_selected) && $data['topic_id'] == $data['topic_first_post_id']) ? true : false,
+				'S_PARTICIPATE'	=> ($post_id == $data['topic_first_post_id']) ? true : false,
 				'STATUS_CLASS'	=> (!$row) ? 'grijs' : (($row['active']) ? 'groen' : 'rood'),
 				'STATUS_TXT'	=> (!$row) ? $this->user->lang['STATUS_TXT_NOT_PARTICIPATE'] :
 									(($row['active']) ? $this->user->lang['STATUS_TXT_PARTICIPATE'] : $this->user->lang['STATUS_TXT_CANCEL_PARTICIPATE']),
 				'BUTTON_TXT'	=> (!$row) ? $this->user->lang['STATUS_TITLE_NOT_PARTICIPATE'] :
 									(($row['active']) ? $this->user->lang['STATUS_TITLE_PARTICIPATE'] : $this->user->lang['STATUS_TITLE_CANCEL_PARTICIPATE']),
-				'STATUS_URL'	=> $this->controller_helper->route('participate_controller', array('name' => 'index.html', 't' => $data['topic_id']))
+				'STATUS_URL'	=> $this->controller_helper->route('participate_controller', array('name' => 'index.html', 't' => $data['topic_id'])),
+				'INFO_URL'		=> '<a href="' . $this->controller_helper->route('participate_controller', array('name' => 'index.html', 't' => 0)) . '" class="simpledialog"><i class="fa fa-info-circle" title="Extension Info"></i></a>'
 			));
 
 			$sql = 'SELECT u.username, u.user_colour, d.user_id, d.active
 					FROM ' . $this->participate_table . ' AS d
-					LEFT JOIN ' . USERS_TABLE . ' AS u
-						ON (d.user_id = u.user_id)
-					WHERE d.topic_id = ' . $data['topic_id']. ' AND d.user_id <> ' . $this->user->data['user_id'] . '
+					LEFT JOIN ' . USERS_TABLE . ' AS u ON (d.user_id = u.user_id)
+					WHERE d.topic_id = ' . $data['topic_id']. '
 					ORDER BY d.active DESC, d.post_time ASC';
 			$result = $this->db->sql_query($sql);
 			while ($row = $this->db->sql_fetchrow($result))
@@ -109,14 +111,20 @@ class listener implements EventSubscriberInterface
 	{
 		if($event['mode'] == 'settings')
 		{
+			if ($this->request->is_set_post('submit'))
+			{
+				$$new_vars = $this->request->variable('participate_forum_ids', array('' => ''), true);
+				$this->config->set('participate_forum_ids', implode(',' , $$new_vars));
+			}
+			
 			$this->user->add_lang_ext('forumhulp/participate', 'participate');
 			$display_vars = $event['display_vars'];
 			/* We add a new legend, but we need to search for the last legend instead of hard-coding */
 			$submit_key = array_search('ACP_SUBMIT_CHANGES', $display_vars['vars']);
 			$submit_legend_number = substr($submit_key, 6);
-			$display_vars['vars']['legend'.$submit_legend_number] = 'ACP_PARTICIPANTS_TITLE';
+			$display_vars['vars']['legend'.$submit_legend_number] = 'ACP_PARTICIPANTS';
 			$new_vars = array(
-				'participate_forum_ids'	=> array('lang' => 'PARTICIPANTS',	'validate' => 'string',	'type' => 'custom', 'function' => __NAMESPACE__.'\listener::forums_select', 'explain' => true),
+				'participate_forum_ids' => array('lang' => 'ACP_PARTICIPANTS', 'validate' => 'string', 'type' => 'custom', 'function' => __NAMESPACE__.'\listener::forums_select', 'explain' => true),
 				'legend'.($submit_legend_number + 1)	=> 'ACP_SUBMIT_CHANGES',
 			);
 			$display_vars['vars'] = phpbb_insert_config_array($display_vars['vars'], $new_vars, array('after' => $submit_key));

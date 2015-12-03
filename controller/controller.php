@@ -8,45 +8,29 @@
 */
 
 namespace forumhulp\participate\controller;
+use Symfony\Component\DependencyInjection\Container;
 
 class controller
 {
-	/** @var \phpbb\db\driver\driver_interface */
+	protected $phpbb_container;
 	protected $db;
-
-	/** @var \phpbb\template\template */
 	protected $template;
-
-	/** @var \phpbb\user */
 	protected $user;
-
-	/** @var \phpbb\request\request */
+	protected $helper;
 	protected $request;
-
-	/**
-	* The database tables
-	*
-	* @var string
-	*/
 	protected $participate_table;
 
 	/**
 	* Constructor
-	*
-	* @param \phpbb\config\db_text               $config_text    DB text object
-	* @param \phpbb\db\driver\driver_interface   $db             Database object
-	* @param \phpbb\controller\helper            $helper         Controller helper object
-	* @param \phpbb\request\request              $request        Request object
-	* @param \phpbb\user                         $user           User object
-	* @return \forumhulp\bex\controller\controller
-	* @access public
 	*/
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\template\template $template, \phpbb\user $user, \phpbb\request\request $request, $participate_table)
+	public function __construct(Container $phpbb_container, \phpbb\db\driver\driver_interface $db, \phpbb\template\template $template, \phpbb\user $user, \phpbb\request\request $request, \phpbb\controller\helper $helper, $participate_table)
 	{
+		$this->phpbb_container		= $phpbb_container;
 		$this->db 					= $db;
 		$this->template				= $template;
 		$this->user					= $user;
 		$this->request				= $request;
+		$this->helper				= $helper;
 		$this->participate_table	= $participate_table;
 	}
 
@@ -76,18 +60,40 @@ class controller
 					}
 					$this->db->sql_query($sql);
 
+					$participants = '';
+					$sql = 'SELECT u.username, u.user_colour, d.user_id, d.active
+							FROM ' . $this->participate_table . ' AS d
+							LEFT JOIN ' . USERS_TABLE . ' AS u ON (d.user_id = u.user_id)
+							WHERE d.topic_id = ' . $topicid . '
+							ORDER BY d.active DESC, d.post_time ASC';
+					$result = $this->db->sql_query($sql);
+					while ($row1 = $this->db->sql_fetchrow($result))
+					{
+						
+						$participants .= (($participants == '') ? $this->user->lang['PARTICIPANTS'] . $this->user->lang['COLON'] . ' ': ', ') . '<span class="' . (($row1['active']) ? 'zwart' : 'grijs doorstreept') . '" style="color: #' . $row1['user_colour'] . ';">' . $row1['username'] . '</span>';
+					}
+					$info_url = '<a href="' . $this->helper->route('participate_controller', array('name' => 'index.html', 't' => 0)) . '" class="simpledialog"><i class="fa fa-info-circle" title="Extension Info"></i></a> <script>$("a.simpledialog").simpleDialog({opacity: 0.1,width: \'650px\',closeLabel: \'&times;\'});</script>';
+					
 					if ($this->request->is_ajax())
 					{
 						$json_response = new \phpbb\json_response();
 						$json_response->send(array(
-							'success'		=> true,
-							'STATUS_CLASS'	=> ($row['active']) ? 'groen' : 'rood',
-							'STATUS_TXT'	=> ($row['active']) ? $this->user->lang['STATUS_TXT_PARTICIPATE'] : $this->user->lang['STATUS_TXT_CANCEL_PARTICIPATE'],
-							'KNOP_TXT'		=> ($row['active']) ? $this->user->lang['STATUS_TITLE_PARTICIPATE'] : $this->user->lang['STATUS_TITLE_CANCEL_PARTICIPATE'],
+							'success'			=> true,
+							'STATUS_CLASS'		=> ($row['active']) ? 'groen' : 'rood',
+							'STATUS_TXT'		=> ($row['active']) ? $this->user->lang['STATUS_TXT_PARTICIPATE'] : $this->user->lang['STATUS_TXT_CANCEL_PARTICIPATE'],
+							'KNOP_TXT'			=> ($row['active']) ? $this->user->lang['STATUS_TITLE_PARTICIPATE'] : $this->user->lang['STATUS_TITLE_CANCEL_PARTICIPATE'],
+							'PARTICIPANTSBAR'	=> $info_url . $participants
 						));
 					}
+					exit();
+				} else
+				{
+					$this->user->add_lang_ext('forumhulp/participate', 'info_acp_participate');
+					$this->user->add_lang('acp/common');
+					$this->phpbb_container->get('forumhulp.helper')->detail('forumhulp/participate');
+					$this->tpl_name = 'acp_ext_details';
+					return $this->helper->render('acp_ext_details.html', 'detail');
 				}
-				exit();
 		}
 	}
 }
