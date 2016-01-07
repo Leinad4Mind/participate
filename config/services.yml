@@ -11,6 +11,7 @@ services:
             - @request
             - @template
             - @user
+            - @auth
             - %forumhulp.participate.tables.participate%
         tags:
             - { name: event.listener }

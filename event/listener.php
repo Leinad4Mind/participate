@@ -38,6 +38,8 @@ class listener implements EventSubscriberInterface
 	/** @var \phpbb\user */
 	protected $user;
 
+	/** @var \phpbb\auth\auth */
+	protected $auth;
 	/**
 	* The database tables
 	*
@@ -45,7 +47,7 @@ class listener implements EventSubscriberInterface
 	*/
 	protected $participate_table;
 
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\controller\helper $controller_helper, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, $participate_table)
+	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\controller\helper $controller_helper, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, \phpbb\auth\auth $auth, $participate_table)
 	{
 		$this->db						= $db;
 		$this->config					= $config;
@@ -53,6 +55,7 @@ class listener implements EventSubscriberInterface
 		$this->request					= $request;
 		$this->template					= $template;
 		$this->user						= $user;
+		$this->auth						= $auth;
 		$this->participate_table		= $participate_table;
 	}
 
@@ -68,7 +71,6 @@ class listener implements EventSubscriberInterface
 	{
 		$this->user->add_lang_ext('forumhulp/participate', 'participate');
 		$forum_selected = explode(',', $this->config['participate_forum_ids']);
-
 		$post_id = $event['rowset']['post_id'];
 		$data = $event['topic_data'];
 
@@ -79,7 +81,7 @@ class listener implements EventSubscriberInterface
 			$row = $this->db->sql_fetchrow($result);
 
 			$this->template->assign_vars(array(
-				'S_PARTICIPATE'	=> ($post_id == $data['topic_first_post_id']) ? true : false,
+				'S_PARTICIPATE'	=> ($this->auth->acl_get('f_reply', $data['forum_id']) && $post_id == $data['topic_first_post_id']) ? true : false,
 				'STATUS_CLASS'	=> (!$row) ? 'grijs' : (($row['active']) ? 'groen' : 'rood'),
 				'STATUS_TXT'	=> (!$row) ? $this->user->lang['STATUS_TXT_NOT_PARTICIPATE'] :
 									(($row['active']) ? $this->user->lang['STATUS_TXT_PARTICIPATE'] : $this->user->lang['STATUS_TXT_CANCEL_PARTICIPATE']),
