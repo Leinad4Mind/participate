@@ -97,7 +97,7 @@ class listener implements EventSubscriberInterface
 
 	public function add_config($event)
 	{
-		if($event['mode'] == 'settings')
+		if ($event['mode'] == 'settings')
 		{
 			if ($this->request->is_set_post('submit'))
 			{
