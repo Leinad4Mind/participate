@@ -10,9 +10,13 @@
 
 namespace forumhulp\participate\event;
 
-/**
-* @ignore
-*/
+use phpbb\db\driver\driver_interface;
+use phpbb\config\config;
+use phpbb\controller\helper;
+use phpbb\request\request;
+use phpbb\template\template;
+use phpbb\user;
+use phpbb\auth\auth;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -20,34 +24,16 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 */
 class listener implements EventSubscriberInterface
 {
-	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
-
-	/** @var \phpbb\config\config */
 	protected $config;
-
-	/** @var \phpbb\controller\helper */
 	protected $controller_helper;
-
-	/** @var \phpbb\request\request */
 	protected $request;
-
-	/** @var \phpbb\template\template */
 	protected $template;
-
-	/** @var \phpbb\user */
 	protected $user;
-
-	/** @var \phpbb\auth\auth */
 	protected $auth;
-	/**
-	* The database tables
-	*
-	* @var string
-	*/
 	protected $participate_table;
 
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\controller\helper $controller_helper, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, \phpbb\auth\auth $auth, $participate_table)
+	public function __construct(driver_interface $db, config $config, helper $controller_helper, request $request, template $template, user $user, auth $auth, $participate_table)
 	{
 		$this->db						= $db;
 		$this->config					= $config;
@@ -71,7 +57,7 @@ class listener implements EventSubscriberInterface
 	{
 		$this->user->add_lang_ext('forumhulp/participate', 'participate');
 		$forum_selected = explode(',', $this->config['participate_forum_ids']);
-		$post_id = $event['rowset']['post_id'];
+		$post_id = $event['post_id'];
 		$data = $event['topic_data'];
 
 		if (in_array($data['forum_id'], $forum_selected) && $post_id = $data['topic_first_post_id'])
@@ -111,12 +97,12 @@ class listener implements EventSubscriberInterface
 
 	public function add_config($event)
 	{
-		if($event['mode'] == 'settings')
+		if ($event['mode'] == 'settings')
 		{
 			if ($this->request->is_set_post('submit'))
 			{
-				$$new_vars = $this->request->variable('participate_forum_ids', array('' => ''), true);
-				$this->config->set('participate_forum_ids', implode(',' , $$new_vars));
+				$new_vars = $this->request->variable('participate_forum_ids', array('' => ''), true);
+				$this->config->set('participate_forum_ids', implode(',' , $new_vars));
 			}
 
 			$this->user->add_lang_ext('forumhulp/participate', 'participate');

@@ -5,24 +5,24 @@ services:
     forumhulp.participate.listener:
         class: forumhulp\participate\event\listener
         arguments:
-            - @dbal.conn
-            - @config
-            - @controller.helper
-            - @request
-            - @template
-            - @user
-            - @auth
-            - %forumhulp.participate.tables.participate%
+            - '@dbal.conn'
+            - '@config'
+            - '@controller.helper'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '@auth'
+            - '%forumhulp.participate.tables.participate%'
         tags:
             - { name: event.listener }
 
     forumhulp.participate.controller:
         class: forumhulp\participate\controller\controller
         arguments:
-            - @service_container
-            - @dbal.conn
-            - @template
-            - @user
-            - @request
-            - @controller.helper
-            - %forumhulp.participate.tables.participate%
+            - '@service_container'
+            - '@dbal.conn'
+            - '@template'
+            - '@user'
+            - '@request'
+            - '@controller.helper'
+            - '%forumhulp.participate.tables.participate%'

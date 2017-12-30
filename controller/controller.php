@@ -9,6 +9,11 @@
 
 namespace forumhulp\participate\controller;
 
+use phpbb\db\driver\driver_interface;
+use phpbb\template\template;
+use phpbb\user;
+use phpbb\request\request;
+use phpbb\controller\helper;
 use Symfony\Component\DependencyInjection\Container;
 
 class controller
@@ -24,7 +29,7 @@ class controller
 	/**
 	* Constructor
 	*/
-	public function __construct(Container $phpbb_container, \phpbb\db\driver\driver_interface $db, \phpbb\template\template $template, \phpbb\user $user, \phpbb\request\request $request, \phpbb\controller\helper $helper, $participate_table)
+	public function __construct(Container $phpbb_container, driver_interface $db, template $template, user $user, request $request, helper $helper, $participate_table)
 	{
 		$this->phpbb_container		= $phpbb_container;
 		$this->db 					= $db;
